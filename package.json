@@ -1,0 +1,25 @@
+{
+  "name": "employee-tracker-cms",
+  "version": "1.0.0",
+  "description": "npm i mysql2 inquirer console.table dotenv",
+  "main": "index.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": true,
+    "trailingComma": "none"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leticianardi/employee-tracker-CMS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leticianardi/employee-tracker-CMS/issues"
+  },
+  "homepage": "https://github.com/leticianardi/employee-tracker-CMS#readme"
+}
