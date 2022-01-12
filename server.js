@@ -4,19 +4,7 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const mysql = require('mysql2');
 const res = require('express/lib/response');
-
-// const connection = require('./connection');
-
-// Connect to database
-const database = mysql.createConnection(
-  {
-    host: 'localhost',
-    user: 'root',
-    password: 'abobora.BRANCA12',
-    database: 'company_db'
-  },
-  console.log(`Connected to employees database.`)
-);
+const connection = require('./connection');
 
 // opening questions
 function menu() {
@@ -69,7 +57,7 @@ function menu() {
           break;
 
         case 'Exit':
-          database.end();
+          connection.end();
           break;
       }
     });
@@ -77,7 +65,7 @@ function menu() {
 
 function allDepartments() {
   const sql = `SELECT * FROM department`;
-  database.query(sql, (err, res) => {
+  connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
     menu();
@@ -86,7 +74,7 @@ function allDepartments() {
 
 function allRoles() {
   const sql = `SELECT * FROM roles`;
-  database.query(sql, (err, res) => {
+  connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
     menu();
@@ -95,7 +83,7 @@ function allRoles() {
 
 function allEmployees() {
   const sql = `SELECT * FROM employees`;
-  database.query(sql, (err, res) => {
+  connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
     menu();
@@ -113,7 +101,7 @@ function addDepartment() {
     ])
     .then((res) => {
       let sql = `INSERT INTO department SET ?`;
-      database.query(sql, { name: res.name }, (err, res) => {
+      connection.query(sql, { name: res.name }, (err, res) => {
         if (err) throw err;
         //console.log(res);
         menu();
@@ -148,7 +136,7 @@ function addRole(department) {
     .then((res) => {
       let sql = `INSERT INTO roles SET ?`;
 
-      database.query(
+      connection.query(
         sql,
         {
           title: res.title,
