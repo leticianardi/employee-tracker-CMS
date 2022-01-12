@@ -3,6 +3,7 @@ require('dotenv').config();
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 const mysql = require('mysql2');
+const res = require('express/lib/response');
 
 // const connection = require('./connection');
 
@@ -27,10 +28,10 @@ function menu() {
         message: 'What would you like to do?',
         choices: [
           'View all departments',
-          'Add department',
           'View roles',
-          'Add role',
           'View employess',
+          'Add department',
+          'Add role',
           'Add employee',
           'Update employee',
           'Exit'
@@ -73,5 +74,91 @@ function menu() {
       }
     });
 }
+
+function allDepartments() {
+  const sql = `SELECT * FROM department`;
+  database.query(sql, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    menu();
+  });
+}
+
+function allRoles() {
+  const sql = `SELECT * FROM roles`;
+  database.query(sql, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    menu();
+  });
+}
+
+function allEmployees() {
+  const sql = `SELECT * FROM employees`;
+  database.query(sql, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    menu();
+  });
+}
+
+function addDepartment() {
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Insert department name: '
+      }
+    ])
+    .then((res) => {
+      let sql = `INSERT INTO department SET ?`;
+      database.query(sql, { name: res.name }, (err, res) => {
+        if (err) throw err;
+        //console.log(res);
+        menu();
+      });
+    });
+}
+
+function addRole(department) {
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'title',
+        message: 'Role title: '
+      },
+      {
+        type: 'input',
+        name: 'salary',
+        message: 'Role salary: '
+      },
+      {
+        type: 'input',
+        name: 'departmentId',
+        message: 'Department ID number: '
+      }
+    ])
+    .then((res) => {
+      let sql = `INSERT INTO roles SET ?`;
+
+      database.query(
+        sql,
+        {
+          title: res.title,
+          salary: res.salary,
+          department_id: res.departmentId
+        },
+        (err, res) => {
+          if (err) throw err;
+          menu();
+        }
+      );
+    });
+}
+
+// addEmployee()
+// updateEmployee()
 
 menu();

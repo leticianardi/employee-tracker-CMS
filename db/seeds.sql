@@ -1,23 +1,23 @@
 INSERT INTO department (id, name)
 VALUES
   (1, 'Management'),
-  (2, 'Research'),
-  (3, 'Finance'),
-  (4, 'Customer Service'),
-  (5, 'Human Resources');
+  (2, 'Human Resources'),
+  (3, 'Research'),
+  (4, 'Finance'),
+  (5, 'Customer Service');
 
-  INSERT INTO roles (title, salary, department_id)
+  INSERT INTO roles (title, salary, department_id, department_name)
   VALUES
-  ('Manager', 90000, 1),
-  ('Researcher', 70000, 2),
-  ('Accountant', 80000, 3),
-  ('Associate', 45000, 4),
-  ('Talent Management', 50000, 5);
+  ('Manager', 90000, 1, 'Management'),
+  ('Talent Management', 50000, 2, 'Human Resources'),
+  ('Researcher', 70000, 3, 'Research'),
+  ('Accountant', 80000, 4, 'Finance'),
+  ('Associate', 45000, 5, 'Customer Service');
 
-  INSERT INTO employee (first_name, last_name, role_id, manager_id)
+  INSERT INTO employees (id, first_name, last_name, roles_id, manager_id)
   VALUES
-  ('Mortimer', 'Goth', 1, NULL)
-  ('Bella', 'Goth', 2, 1)
-  ('Cassandra', 'Goth', 3, 1)
-  ('Gunter', 'Goth', 4, 5)
-  ('Cornelia', 'Goth', 5, 2)
+  (1, 'Mortimer', 'Goth', 1, NULL),
+  (2, 'Bella', 'Goth', 2, NULL),
+  (3, 'Cassandra', 'Goth', 3, 2),
+  (4, 'Gunter', 'Goth', 4, 1),
+  (5, 'Cornelia', 'Goth', 5, 2);
