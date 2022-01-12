@@ -127,17 +127,22 @@ function addRole(department) {
       {
         type: 'input',
         name: 'title',
-        message: 'Role title: '
+        message: 'Insert role title: '
       },
       {
         type: 'input',
         name: 'salary',
-        message: 'Role salary: '
+        message: 'Insert role salary: '
       },
       {
         type: 'input',
         name: 'departmentId',
-        message: 'Department ID number: '
+        message: 'Insert department ID number: '
+      },
+      {
+        type: 'input',
+        name: 'departmentName',
+        message: 'Insert department name: '
       }
     ])
     .then((res) => {
@@ -148,7 +153,8 @@ function addRole(department) {
         {
           title: res.title,
           salary: res.salary,
-          department_id: res.departmentId
+          department_id: res.departmentId,
+          department_name: res.departmentName
         },
         (err, res) => {
           if (err) throw err;
@@ -158,7 +164,10 @@ function addRole(department) {
     });
 }
 
-// addEmployee()
-// updateEmployee()
+// function addEmployee()
+
+// function updateEmployee()
+
+// function deleteEmployee()
 
 menu();

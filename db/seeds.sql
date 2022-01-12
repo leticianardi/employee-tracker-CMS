@@ -14,10 +14,10 @@ VALUES
   ('Accountant', 80000, 4, 'Finance'),
   ('Associate', 45000, 5, 'Customer Service');
 
-  INSERT INTO employees (id, first_name, last_name, roles_id, manager_id)
+  INSERT INTO employees (first_name, last_name, roles_id, manager_id)
   VALUES
-  (1, 'Mortimer', 'Goth', 1, NULL),
-  (2, 'Bella', 'Goth', 2, NULL),
-  (3, 'Cassandra', 'Goth', 3, 2),
-  (4, 'Gunter', 'Goth', 4, 1),
-  (5, 'Cornelia', 'Goth', 5, 2);
+  ('Mortimer', 'Goth', 1, NULL),
+  ('Bella', 'Goth', 2, NULL),
+  ('Cassandra', 'Goth', 3, 2),
+  ('Gunter', 'Goth', 4, 1),
+  ('Cornelia', 'Goth', 5, 2);
