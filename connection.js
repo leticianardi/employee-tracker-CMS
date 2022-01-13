@@ -1,12 +1,12 @@
 const mysql = require('mysql2');
+// const connection = require('sequelize');
+require('dotenv').config();
 
 const connection = mysql.createConnection({
   host: 'localhost',
-  // Your username
-  user: 'root',
-  // Your password
-  password: 'abobora.BRANCA12',
-  database: 'company_db'
+  user: process.env.user,
+  password: process.env.password,
+  database: process.env.database
 });
 
 connection.connect(function (err) {

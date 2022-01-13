@@ -1,10 +1,31 @@
-require('dotenv').config();
-
 const inquirer = require('inquirer');
-const cTable = require('console.table');
+const table = require('console.table');
 const mysql = require('mysql2');
 const res = require('express/lib/response');
-const connection = require('./connection');
+
+// require('dotenv').config();
+// const connection = require('./connection');
+
+// const connection = mysql.createConnection(
+//   {
+//     host: process.env.host,
+//     user: process.env.user,
+//     password: process.env.password,
+//     database: process.env.database
+//   },
+//   console.log('Connected to Company Database')
+// );
+
+const connection = mysql.createConnection(
+  //acess to database
+  {
+    host: 'localhost',
+    user: 'root',
+    password: 'abobora.BRANCA12',
+    database: 'company_db'
+  },
+  console.log('Connected to Company Database')
+);
 
 // opening questions
 function menu() {
@@ -104,6 +125,7 @@ function addDepartment() {
       connection.query(sql, { name: res.name }, (err, res) => {
         if (err) throw err;
         //console.log(res);
+        console.table(res);
         menu();
       });
     });
@@ -146,13 +168,82 @@ function addRole(department) {
         },
         (err, res) => {
           if (err) throw err;
+          console.table(res);
           menu();
         }
       );
     });
 }
 
-// function addEmployee()
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'firstName',
+        message: "Insert employee's first name: ",
+        validate: (answer) => {
+          if (answer !== '') {
+            return true;
+          }
+          return 'Please enter at least one character.';
+        }
+      },
+      {
+        type: 'input',
+        name: 'lastName',
+        message: "Insert employee's last name: ",
+        validate: (answer) => {
+          if (answer !== '') {
+            return true;
+          }
+          return 'Please enter at least one character.';
+        }
+      },
+      {
+        type: 'input',
+        name: 'roleId',
+        message: "Insert employee's role ID number: ",
+        validate: (answer) => {
+          const pass = answer.match(/^[1-9]\d*$/);
+          if (pass) {
+            return true;
+          }
+          return 'Please enter a valid id.';
+        }
+      },
+      {
+        type: 'input',
+        name: 'managerId',
+        message: "Insert employee's manager ID number: ",
+        validate: (answer) => {
+          const pass = answer.match(/^[1-9]\d*$/);
+          if (pass) {
+            return true;
+          }
+          return 'Please enter a valid id.';
+        }
+      }
+    ])
+    .then((res) => {
+      let sql = `INSERT INTO employees SET ?`;
+
+      connection.query(
+        sql,
+        {
+          first_name: res.firstName,
+          last_name: res.lastName,
+          roles_id: res.roleId,
+          manager_id: res.managerId
+        },
+        (err, res) => {
+          if (err) throw err;
+          console.table(res);
+          menu();
+        }
+      );
+    });
+}
 
 // function updateEmployee()
 
