@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const table = require('console.table');
+const cTable = require('console.table');
 const mysql = require('mysql2');
 const res = require('express/lib/response');
 
@@ -43,7 +43,7 @@ function menu() {
           'Add role',
           'Add employee',
           'Update employee',
-          'Exit'
+          'Exit menu'
         ]
       }
     ])
@@ -117,14 +117,23 @@ function addDepartment() {
       {
         type: 'input',
         name: 'name',
-        message: 'Insert department name: '
+        message: 'Insert department name: ',
+        validate: (answer) => {
+          if (answer !== '') {
+            return true;
+          }
+          return 'Please enter at least one character.';
+        }
       }
     ])
     .then((res) => {
       let sql = `INSERT INTO department SET ?`;
       connection.query(sql, { name: res.name }, (err, res) => {
         if (err) throw err;
-        //console.log(res);
+      });
+      const showTable = `SELECT * FROM department`;
+      connection.query(showTable, (err, res) => {
+        if (err) throw err;
         console.table(res);
         menu();
       });
@@ -137,45 +146,69 @@ function addRole(department) {
       {
         type: 'input',
         name: 'title',
-        message: 'Insert role title: '
+        message: 'Insert role title: ',
+        validate: (answer) => {
+          if (answer !== '') {
+            return true;
+          }
+          return 'Please enter at least one character.';
+        }
       },
       {
         type: 'input',
         name: 'salary',
-        message: 'Insert role salary: '
+        message: 'Insert role salary: ',
+        validate: (answer) => {
+          const pass = answer.match(/^[1-9]\d*$/);
+          if (pass) {
+            return true;
+          }
+          return 'Please enter a valid id.';
+        }
       },
       {
         type: 'input',
         name: 'departmentId',
-        message: 'Insert department ID number: '
+        message: 'Insert department ID number: ',
+        validate: (answer) => {
+          const pass = answer.match(/^[1-9]\d*$/);
+          if (pass) {
+            return true;
+          }
+          return 'Please enter a valid id.';
+        }
       },
       {
         type: 'input',
         name: 'departmentName',
-        message: 'Insert department name: '
+        message: 'Insert department name: ',
+        validate: (answer) => {
+          if (answer !== '') {
+            return true;
+          }
+          return 'Please enter at least one character.';
+        }
       }
     ])
     .then((res) => {
       let sql = `INSERT INTO roles SET ?`;
 
-      connection.query(
-        sql,
-        {
-          title: res.title,
-          salary: res.salary,
-          department_id: res.departmentId,
-          department_name: res.departmentName
-        },
-        (err, res) => {
-          if (err) throw err;
-          console.table(res);
-          menu();
-        }
-      );
+      connection.query(sql, {
+        title: res.title,
+        salary: res.salary,
+        department_id: res.departmentId,
+        department_name: res.departmentName
+      });
+      const showTable = `SELECT * FROM roles`;
+      connection.query(showTable, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        menu();
+      });
     });
 }
 
-function addEmployee() {
+function addEmployee(department, roles) {
   inquirer
     .prompt([
       {
@@ -203,7 +236,7 @@ function addEmployee() {
       {
         type: 'input',
         name: 'roleId',
-        message: "Insert employee's role ID number: ",
+        message: "Insert employee's role ID number (only numbers): ",
         validate: (answer) => {
           const pass = answer.match(/^[1-9]\d*$/);
           if (pass) {
@@ -215,7 +248,7 @@ function addEmployee() {
       {
         type: 'input',
         name: 'managerId',
-        message: "Insert employee's manager ID number: ",
+        message: "Insert employee's manager ID number (only numbers): ",
         validate: (answer) => {
           const pass = answer.match(/^[1-9]\d*$/);
           if (pass) {
@@ -227,23 +260,22 @@ function addEmployee() {
     ])
     .then((res) => {
       let sql = `INSERT INTO employees SET ?`;
+      connection.query(sql, {
+        first_name: res.firstName,
+        last_name: res.lastName,
+        roles_id: res.roleId,
+        manager_id: res.managerId
+      });
 
-      connection.query(
-        sql,
-        {
-          first_name: res.firstName,
-          last_name: res.lastName,
-          roles_id: res.roleId,
-          manager_id: res.managerId
-        },
-        (err, res) => {
-          if (err) throw err;
-          console.table(res);
-          menu();
-        }
-      );
+      const showTable = `SELECT * FROM employees`;
+      connection.query(showTable, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        menu();
+      });
     });
 }
+// inner joy from PA where TAL COLUMAN = tal colunaD
 
 // function updateEmployee()
 
