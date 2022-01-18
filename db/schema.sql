@@ -7,17 +7,17 @@ CREATE DATABASE company_db;
 
 USE company_db;
 
-CREATE TABLE department(
+CREATE TABLE departments(
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(30) NOT NULL
+  department_name VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE roles (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR (30),
   salary DECIMAL(10,2),
-  department_id INTEGER,
-  department_name VARCHAR (30)
+  departments_id INTEGER,
+  departments_department_name VARCHAR (30)
 );
 
 CREATE TABLE employees (

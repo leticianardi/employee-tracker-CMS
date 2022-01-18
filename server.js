@@ -208,7 +208,7 @@ function addRole(department) {
     });
 }
 
-function addEmployee(department, roles) {
+function addEmployee(departments, roles) {
   inquirer
     .prompt([
       {
@@ -236,26 +236,12 @@ function addEmployee(department, roles) {
       {
         type: 'input',
         name: 'roleId',
-        message: "Insert employee's role ID number (only numbers): ",
-        validate: (answer) => {
-          const pass = answer.match(/^[1-9]\d*$/);
-          if (pass) {
-            return true;
-          }
-          return 'Please enter a valid id.';
-        }
+        message: "Insert employee's role ID number: "
       },
       {
         type: 'input',
         name: 'managerId',
-        message: "Insert employee's manager ID number (only numbers): ",
-        validate: (answer) => {
-          const pass = answer.match(/^[1-9]\d*$/);
-          if (pass) {
-            return true;
-          }
-          return 'Please enter a valid id.';
-        }
+        message: "Insert employee's manager ID number: "
       }
     ])
     .then((res) => {
@@ -267,7 +253,19 @@ function addEmployee(department, roles) {
         manager_id: res.managerId
       });
 
-      const showTable = `SELECT * FROM employees`;
+      const showTable = `SELECT 
+                          employees.id,
+                          employees.first_name,
+                          employees.last_name,
+                          roles.title,
+                          roles.salary,
+                          departments.department_name
+                        FROM employees
+                        JOIN roles
+                          ON roles_id = roles.id
+                        JOIN departments
+                          ON departments.id = roles.departments_id
+                        ORDER BY departments_id`;
       connection.query(showTable, (err, res) => {
         if (err) throw err;
         console.table(res);
