@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const cTable = require('console.table');
 const mysql = require('mysql2');
 const res = require('express/lib/response');
+const { listenerCount, title } = require('process');
 
 // require('dotenv').config();
 // const connection = require('./connection');
@@ -85,7 +86,7 @@ function menu() {
 }
 
 function allDepartments() {
-  const sql = `SELECT * FROM department`;
+  const sql = `SELECT * FROM departments`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -127,11 +128,11 @@ function addDepartment() {
       }
     ])
     .then((res) => {
-      let sql = `INSERT INTO department SET ?`;
+      let sql = `INSERT INTO departments SET ?`;
       connection.query(sql, { name: res.name }, (err, res) => {
         if (err) throw err;
       });
-      const showTable = `SELECT * FROM department`;
+      const showTable = `SELECT * FROM departments`;
       connection.query(showTable, (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -140,7 +141,7 @@ function addDepartment() {
     });
 }
 
-function addRole(department) {
+function addRole(departments) {
   inquirer
     .prompt([
       {
@@ -157,13 +158,13 @@ function addRole(department) {
       {
         type: 'input',
         name: 'salary',
-        message: 'Insert role salary: ',
+        message: 'Insert role annual salary (only numbers): ',
         validate: (answer) => {
           const pass = answer.match(/^[1-9]\d*$/);
           if (pass) {
             return true;
           }
-          return 'Please enter a valid id.';
+          return 'Please enter a valid number.';
         }
       },
       {
@@ -196,8 +197,8 @@ function addRole(department) {
       connection.query(sql, {
         title: res.title,
         salary: res.salary,
-        department_id: res.departmentId,
-        department_name: res.departmentName
+        departments_id: res.departmentId,
+        departments_name: res.departmensName
       });
       const showTable = `SELECT * FROM roles`;
       connection.query(showTable, (err, res) => {
@@ -273,10 +274,58 @@ function addEmployee(departments, roles) {
       });
     });
 }
-// inner joy from PA where TAL COLUMAN = tal colunaD
 
-// function updateEmployee()
+function updateEmployee() {
+  const sql = `SELECT * FROM employees`;
 
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+    const employee = res.map(({ id, first_name, last_name }) => ({
+      value: id,
+      name: `${first_name} ${last_name}`
+    }));
+    return inquirer
+      .prompt([
+        {
+          type: 'list',
+          name: 'title',
+          message: 'Choose the employee you would like to update:',
+          choices: employee
+        }
+      ])
+      .then((answers) => {
+        const sql = `SELECT * FROM roles`;
+        connection.query(sql, (err, res) => {
+          if (err) throw err;
+          const role = res.map(({ id, title, salary }) => ({
+            value: id,
+            title: `${title}`,
+            salary: `${salary}`,
+            name: `${title}`
+          }));
+          return inquirer
+            .prompt([
+              {
+                type: 'list',
+                name: 'role',
+                message: "Choose employee's new role",
+                choices: role
+              }
+            ])
+            .then((ans) => {
+              const sql = `UPDATE employees SET roles_id = ? WHERE id = ?`;
+              const params = [ans.role, answers.title];
+
+              connection.query(sql, params, (err, res) => {
+                if (err) throw err;
+                console.table(res);
+                menu();
+              });
+            });
+        });
+      });
+  });
+}
 // function deleteEmployee()
 
 menu();
