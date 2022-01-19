@@ -6,13 +6,13 @@ VALUES
   (4, 'Finance'),
   (5, 'Customer Service');
 
-  INSERT INTO roles (title, salary, departments_id, departments_department_name)
+  INSERT INTO roles (title, salary, departments_id)
   VALUES
-  ('Manager', 120000, 1, 'Management'),
-  ('Talent Management', 50000, 2, 'Human Resources'),
-  ('Researcher', 70000, 3, 'Research'),
-  ('Accountant', 80000, 4, 'Finance'),
-  ('Associate', 45000, 5, 'Customer Service');
+  ('Manager', 120000, 1),
+  ('Talent Management', 50000, 2),
+  ('Researcher', 70000, 3),
+  ('Accountant', 80000, 4),
+  ('Associate', 45000, 5);
 
   INSERT INTO employees (first_name, last_name, roles_id, manager_id)
   VALUES

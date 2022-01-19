@@ -110,7 +110,15 @@ function allDepartments() {
 }
 
 function allRoles() {
-  const sql = `SELECT * FROM roles`;
+  const sql = `SELECT
+                roles.id,
+                roles.title,
+                roles.salary,
+                roles.departments_id,
+                departments.department_name
+              FROM roles
+              JOIN departments
+                ON departments.id = roles.departments_id`;
 
   connection.query(sql, (err, res) => {
     if (err) throw err;
@@ -170,14 +178,15 @@ function addDepartment() {
 }
 
 function addRole() {
+  const sql = `SELECT * FROM departments`;
+
   connection
-    .promise()
-    .query('SELECT * FROM departments')
+    .query(sql)
     .then((res) => {
       return res[0].map((departments) => {
         return {
           value: departments.id,
-          name: `${departments.departments_id} ${departments.department_name}`
+          name: departments.department_name
         };
       });
     })
@@ -210,23 +219,23 @@ function addRole() {
         {
           type: 'list',
           name: 'department',
-          message: 'Choose the department: ',
+          message: 'Choose the department name: ',
           choices: department
         }
       ]);
     })
 
     .then((answer) => {
-      console.log(answer);
-      return connection.promise().query(`INSERT INTO roles SET ?`, {
+      const sql = `INSERT INTO roles SET ?`;
+      const params = [answer.department];
+
+      connection.query(sql, params, {
         title: answer.title,
         salary: answer.salary,
-        departments_id: answer.department,
-        departments_name: answer.department
+        departments_id: answer.department
       });
     })
     .then((res) => {
-      console.log('Role added');
       allRoles();
     });
 }
@@ -348,14 +357,13 @@ function deleteEmployee() {
         {
           type: 'list',
           name: 'employee',
-          message: 'Choose the employee you would like to delete:',
+          message: 'Choose an employee to delete:',
           choices: employee
         }
       ])
-      .then((answers) => {
-        const sql = `DELETE * FROM employees`;
-        const params = [answers.employee];
-
+      .then((answer) => {
+        const sql = `DELETE FROM employees WHERE id = ?`;
+        const params = [answer.employee];
         connection.query(sql, params, (err, res) => {
           if (err) throw err;
           allEmployees();
@@ -398,15 +406,10 @@ function deleteRole() {
 
   connection.query(sql, (err, res) => {
     if (err) throw err;
-    const role = res.map(
-      ({ id, title, salary, departments_id, departments_department_name }) => ({
-        value: id,
-        title: `${title}`,
-        salary: `${salary}`,
-        departments_id: `${departments_id}`,
-        departments_department_name: `${departments_department_name}`
-      })
-    );
+    const role = res.map(({ id, title }) => ({
+      value: id,
+      name: `${title}`
+    }));
     return inquirer
       .prompt([
         {
@@ -421,7 +424,7 @@ function deleteRole() {
         const params = [answer.role];
         connection.query(sql, params, (err, res) => {
           if (err) throw err;
-          allroles();
+          allRoles();
         });
       });
   });
