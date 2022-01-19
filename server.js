@@ -4,28 +4,15 @@ const mysql = require('mysql2');
 const res = require('express/lib/response');
 const { listenerCount, title } = require('process');
 
-// require('dotenv').config();
-// const connection = require('./connection');
-
-// const connection = mysql.createConnection(
-//   {
-//     host: process.env.host,
-//     user: process.env.user,
-//     password: process.env.password,
-//     database: process.env.database
-//   },
-//   console.log('Connected to Company Database')
-// );
-
+require('dotenv').config();
 const connection = mysql.createConnection(
-  //acess to database
   {
     host: 'localhost',
-    user: 'root',
-    password: 'abobora.BRANCA12',
-    database: 'company_db'
+    user: process.env.user,
+    password: process.env.password,
+    database: process.env.database
   },
-  console.log('Connected to the Company Database')
+  console.log('Connected to Company Database')
 );
 
 // opening questions
