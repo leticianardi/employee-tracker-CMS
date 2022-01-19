@@ -104,7 +104,19 @@ function allRoles() {
 }
 
 function allEmployees() {
-  const sql = `SELECT * FROM employees`;
+  const sql = `SELECT 
+                employees.id,
+                employees.first_name,
+                employees.last_name,
+                roles.title,
+                roles.salary,
+                departments.department_name
+              FROM employees
+              JOIN roles
+                ON roles_id = roles.id
+              JOIN departments
+                ON departments.id = roles.departments_id
+              ORDER BY departments_id`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -318,8 +330,7 @@ function updateEmployee() {
 
               connection.query(sql, params, (err, res) => {
                 if (err) throw err;
-                console.table(res);
-                menu();
+                allEmployees();
               });
             });
         });
