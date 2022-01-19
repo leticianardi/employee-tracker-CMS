@@ -25,7 +25,7 @@ const connection = mysql.createConnection(
     password: 'abobora.BRANCA12',
     database: 'company_db'
   },
-  console.log('Connected to Company Database')
+  console.log('Connected to the Company Database')
 );
 
 // opening questions
@@ -129,18 +129,21 @@ function allRoles() {
 
 function allEmployees() {
   const sql = `SELECT 
-                employees.id,
-                employees.first_name,
-                employees.last_name,
-                roles.title,
-                roles.salary,
-                departments.department_name
+                employees.id, 
+                employees.first_name, 
+                employees.last_name, 
+                roles.title, 
+                roles.salary, 
+                departments.department_name AS department, 
+                CONCAT(managers.first_name, ' ', managers.last_name) AS manager
               FROM employees
-              JOIN roles
-                ON roles_id = roles.id
-              JOIN departments
+              LEFT JOIN roles
+                ON employees.roles_id = roles.id
+              LEFT JOIN departments
                 ON departments.id = roles.departments_id
-              ORDER BY departments_id`;
+              LEFT JOIN employees managers
+                ON managers.id = employees.manager_id`;
+
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -171,26 +174,24 @@ function addDepartment() {
       const showTable = `SELECT * FROM departments`;
       connection.query(showTable, (err, res) => {
         if (err) throw err;
-        console.table(res);
+        console.log('Added department to the database');
         menu();
       });
     });
 }
 
 function addRole() {
-  const sql = `SELECT * FROM departments`;
-
   connection
-    .query(sql)
+    .promise()
+    .query('SELECT * FROM departments')
     .then((res) => {
-      return res[0].map((departments) => {
+      return res[0].map((department) => {
         return {
-          value: departments.id,
-          name: departments.department_name
+          value: department.id,
+          name: department.department_name
         };
       });
     })
-
     .then((department) => {
       return inquirer.prompt([
         {
@@ -219,24 +220,23 @@ function addRole() {
         {
           type: 'list',
           name: 'department',
-          message: 'Choose the department name: ',
+          message: 'Select the department name: ',
           choices: department
         }
       ]);
     })
 
     .then((answer) => {
-      const sql = `INSERT INTO roles SET ?`;
-      const params = [answer.department];
-
-      connection.query(sql, params, {
+      return connection.promise().query('INSERT INTO roles SET ?', {
         title: answer.title,
         salary: answer.salary,
         departments_id: answer.department
       });
     })
+
     .then((res) => {
-      allRoles();
+      console.log('Added role to the database');
+      menu();
     });
 }
 
@@ -287,7 +287,8 @@ function addEmployee(departments, roles) {
 
       connection.query(sql, params, (err, res) => {
         if (err) throw err;
-        allEmployees();
+        console.log('Added employee to the database');
+        menu();
       });
     });
 }
@@ -335,7 +336,8 @@ function updateEmployee() {
 
               connection.query(sql, params, (err, res) => {
                 if (err) throw err;
-                allEmployees();
+                console.log('Updated employee in the database');
+                menu();
               });
             });
         });
@@ -366,7 +368,8 @@ function deleteEmployee() {
         const params = [answer.employee];
         connection.query(sql, params, (err, res) => {
           if (err) throw err;
-          allEmployees();
+          console.log('Deleted employee from the database');
+          menu();
         });
       });
   });
@@ -395,7 +398,8 @@ function deleteDepartment() {
         const params = [answer.department];
         connection.query(sql, params, (err, res) => {
           if (err) throw err;
-          allDepartments();
+          console.log('Deleted department from the database');
+          menu();
         });
       });
   });
@@ -406,9 +410,11 @@ function deleteRole() {
 
   connection.query(sql, (err, res) => {
     if (err) throw err;
-    const role = res.map(({ id, title }) => ({
+    const role = res.map(({ id, title, salary, departments_id }) => ({
       value: id,
-      name: `${title}`
+      name: `${title}`,
+      salary: `${salary}`,
+      dpto: `${departments_id}`
     }));
     return inquirer
       .prompt([
@@ -424,7 +430,8 @@ function deleteRole() {
         const params = [answer.role];
         connection.query(sql, params, (err, res) => {
           if (err) throw err;
-          allRoles();
+          console.log('Deleted role from the database');
+          menu();
         });
       });
   });
